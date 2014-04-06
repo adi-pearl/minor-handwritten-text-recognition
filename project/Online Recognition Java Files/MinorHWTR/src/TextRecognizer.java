@@ -4,6 +4,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.*;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 /* <applet code="Cal" width=300 height=300> </applet> */
@@ -12,6 +13,11 @@ public class TextRecognizer extends Applet{
 	//GUI elements
 	private JLabel statusBar;
 	private final int wdHt=500,wdWt=500;
+	private class coord{
+		public int x,y;
+		coord(int a, int b){x=a;y=b;}
+	}
+	Vector<coord> v=new Vector<>();
 	//Neural Network Components
 	private final int resolution=20;
 	private boolean bitmap[][]=new boolean[wdHt+1][wdWt+1];
@@ -25,6 +31,14 @@ public class TextRecognizer extends Applet{
 		HandlerClass handler= new HandlerClass();
 		this.addMouseListener(handler);
 		this.addMouseMotionListener(handler);
+	}
+	public void paint(Graphics g){
+		super.paint(g);
+		try{
+		for(coord c : v)
+			g.fillOval(c.x, c.y, 2, 2);
+		}
+		catch(Exception e){System.out.println(e.getMessage());}
 	}
 	private void imresize(boolean bitmap[][]){
 		int gridHt=wdHt/resolution,gridWt=wdWt/resolution;
@@ -49,6 +63,7 @@ public class TextRecognizer extends Applet{
 			// TODO Auto-generated method stub
 			statusBar.setText("Drawing@ "+e.getX()+" "+e.getY() );
 			bitmap[e.getY()][e.getX()]=true;
+			v.add(new coord(e.getX(),e.getY()));repaint();
 		}
 
 		@Override
