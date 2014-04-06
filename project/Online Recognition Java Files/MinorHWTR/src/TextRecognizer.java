@@ -1,5 +1,4 @@
 /* @author Aditya
- * Program: applet that works as a simple calculator
  */
 
 import java.awt.*;

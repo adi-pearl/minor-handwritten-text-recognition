@@ -18,3 +18,5 @@ run the applet TextRecognizer
 then drag the mouse through the applet window to draw a digit, do not release mouse until the complete digit is drawn;
 then run "onlineDigitClassification" on Octave cmd-line.
 mostly the predictions are correct  
+
+Note: change the directory for storing ex.txt in TextRecognizer file, this directory should be the same as the dir in which neural network files are present...
