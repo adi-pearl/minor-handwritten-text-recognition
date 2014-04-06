@@ -1,5 +1,6 @@
-function tenfoldValidation(oX,oy,input_layer_size,hidden_layer_size,num_labels,lambda)
+function tenfoldValidation(oX,oy,hidden_layer_size,num_labels,lambda)
 m=size(oX,1);
+input_layer_size=size(oX,2);
 foldSize=m/10;
 options = optimset('MaxIter', 30);
 initial_Theta1 = randInitializeWeights(input_layer_size, hidden_layer_size);

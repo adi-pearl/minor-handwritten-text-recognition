@@ -34,7 +34,19 @@ fprintf('Loading and Visualizing Data ...\n')
 
 load('ex4data1.mat');
 m = size(X, 1);
-X=convertCorpusIntoBinary(X);
+binary=false;
+convertCmd=input("Convert to Binary format? (y/n):\t","s");
+if strcmp(convertCmd,"y") || strcmp(convertCmd,"Y") || strcmp(convertCmd,"yes")  X=convertCorpusIntoBinary(X); binary=true;end;
+
+if binary==false
+	%strip off the negative values from dataset X
+	for i=1:m
+		for j=1:input_layer_size
+			if X(i,j)<0.0 X(i,j)=0.0; end
+		end
+	end
+end
+
 % Randomly select 100 data points to display
 sel = randperm(size(X, 1));
 sel = sel(1:100);
@@ -141,13 +153,13 @@ initial_nn_params = [initial_Theta1(:) ; initial_Theta2(:)];
 %  code you've written in nnCostFunction.m to return the partial
 %  derivatives of the parameters.
 %
-fprintf('\nChecking Backpropagation... \n');
+%fprintf('\nChecking Backpropagation... \n');
 
 %  Check gradients by running checkNNGradients
-checkNNGradients;
+%checkNNGradients;
 
-fprintf('\nProgram paused. Press enter to continue.\n');
-pause;
+%fprintf('\nProgram paused. Press enter to continue.\n');
+%pause;
 
 
 %% =============== Part 8: Implement Regularization ===============
@@ -155,21 +167,21 @@ pause;
 %  continue to implement the regularization with the cost and gradient.
 %
 
-fprintf('\nChecking Backpropagation (w/ Regularization) ... \n')
+%fprintf('\nChecking Backpropagation (w/ Regularization) ... \n')
 
 %  Check gradients by running checkNNGradients
-lambda = 3;
-checkNNGradients(lambda);
+%lambda = 3;
+%checkNNGradients(lambda);
 
 % Also output the costFunction debugging values
-debug_J  = nnCostFunction(nn_params, input_layer_size, ...
-                          hidden_layer_size, num_labels, X, y, lambda);
+%debug_J  = nnCostFunction(nn_params, input_layer_size, ...
+%                          hidden_layer_size, num_labels, X, y, lambda);
 
-fprintf(['\n\nCost at (fixed) debugging parameters (w/ lambda = 10): %f ' ...
-         '\n(this value should be about 0.576051)\n\n'], debug_J);
+%fprintf(['\n\nCost at (fixed) debugging parameters (w/ lambda = 10): %f ' ...
+%         '\n(this value should be about 0.576051)\n\n'], debug_J);
 
-fprintf('Program paused. Press enter to continue.\n');
-pause;
+%fprintf('Program paused. Press enter to continue.\n');
+%pause;
 
 
 %% =================== Part 8: Training NN ===================
@@ -205,6 +217,8 @@ Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
 Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
                  num_labels, (hidden_layer_size + 1));
 
+%save neural network parmeters for later predictions.
+save neuralParameters.mat Theta1 Theta2 binary;
 fprintf('Program paused. Press enter to continue.\n');
 pause;
 
@@ -230,5 +244,6 @@ pause;
 [dummy,pred] = predict(Theta1, Theta2, X);
 
 fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == y)) * 100);
-
-
+fprintf('\n========================\n');
+fprintf('TenFoldCrossValidation\n');
+tenfoldValidation(X,y,hidden_layer_size,num_labels,lambda);
