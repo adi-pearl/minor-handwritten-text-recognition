@@ -23,6 +23,7 @@ public class Writefile {
 				x.append(image[i][j]?'1':'0');
 				x.append(" ");
 			}
+			//x.append("\n");
 		}
 		x.append(symbol);
 		x.append("\n");

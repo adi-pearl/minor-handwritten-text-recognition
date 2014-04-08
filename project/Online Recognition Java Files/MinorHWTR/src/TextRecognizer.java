@@ -6,12 +6,14 @@ import java.awt.event.*;
 import java.applet.*;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 /* <applet code="Cal" width=300 height=300> </applet> */
 
 public class TextRecognizer extends Applet{
 	//GUI elements
 	private JLabel statusBar;
+	private JButton nextButton=new JButton("next");
 	private final int wdHt=500,wdWt=500;
 	private class coord{
 		public int x,y;
@@ -33,13 +35,14 @@ public class TextRecognizer extends Applet{
 		
 		statusBar=new JLabel("default");
 		this.add(statusBar,BorderLayout.SOUTH);
-		
+		this.add(nextButton,BorderLayout.EAST);
 		HandlerClass handler= new HandlerClass();
 		this.addMouseListener(handler);
 		this.addMouseMotionListener(handler);
-		
+		nextButton.addActionListener(handler);
 		presentSymbol='0';counter=0;
-		statusBar.setText("Draw "+presentSymbol);
+		clearBitmap();
+		statusBar.setText("Draw "+presentSymbol);setForeground(Color.RED);
 	}
 	public void paint(Graphics g){
 		super.paint(g);
@@ -64,13 +67,19 @@ public class TextRecognizer extends Applet{
 				else image[i][j]=false;
 			}
 	}
+	private void clearBitmap(){
+		for(int i=0;i<500;++i)
+			for(int j=0;j<500;++j)
+				bitmap[i][j]=false;
+		statusBar.setText("bitmap cleared");
+	}
 	private class HandlerClass implements 
-		MouseListener, MouseMotionListener{
+		MouseListener, MouseMotionListener,ActionListener{
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			// TODO Auto-generated method stub
-			statusBar.setText("Drawing@ "+e.getX()+" "+e.getY() );
+			statusBar.setText("Drawing: "+presentSymbol );
 			bitmap[e.getY()][e.getX()]=true;
 			v.add(new coord(e.getX(),e.getY()));repaint();
 		}
@@ -102,35 +111,39 @@ public class TextRecognizer extends Applet{
 		@Override
 		public void mousePressed(MouseEvent e) {
 			// TODO Auto-generated method stub
-			for(int i=0;i<500;++i)
-				for(int j=0;j<500;++j)
-					bitmap[i][j]=false;
-			statusBar.setText("bitmap cleared");
-			setForeground(Color.RED);
+			
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			// TODO Auto-generated method stub
-			if(counter==0)f.openFile(directory+presentSymbol+".txt",presentSymbol);
-			counter++;
 			
-			statusBar.setText("Digit successfully Drawn");
-			v.clear();repaint();
-			imresize(bitmap);
-			f.addImage(image, resolution, resolution);
-			statusBar.setText("Digit image matrix stored in ex.txt");
-			
-			if(counter==noOfSamplesPerCharacter){
-				if(presentSymbol<'9')presentSymbol++;
-				else if(presentSymbol=='9')presentSymbol='a';
-				else if(presentSymbol<'z')presentSymbol++;
-				else {statusBar.setText("Corpus complete on your part...");}
-				counter=0;
-				f.closeFile();
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(e.getSource()==nextButton){
+				if(counter==0)f.openFile(directory+presentSymbol+".txt",presentSymbol);
+				counter++;
+				
+				statusBar.setText("Digit successfully Drawn");
+				v.clear();repaint();
+				imresize(bitmap);
+				f.addImage(image, resolution, resolution);
+				statusBar.setText("Digit image matrix stored in ex.txt");
+				
+				if(counter==noOfSamplesPerCharacter){
+					if(presentSymbol<'9')presentSymbol++;
+					else if(presentSymbol=='9')presentSymbol='a';
+					else if(presentSymbol<'z')presentSymbol++;
+					else {statusBar.setText("Corpus complete on your part...");}
+					counter=0;
+					f.closeFile();
+				}
+				clearBitmap();
+				statusBar.setText("Draw "+presentSymbol);
 			}
-			
-			statusBar.setText("Draw "+presentSymbol);
 		}	
 	}
 }
