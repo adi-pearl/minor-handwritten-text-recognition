@@ -25,7 +25,7 @@ public class Writefile {
 			}
 			//x.append("\n");
 		}
-		x.append(symbol);
+		//x.append(symbol);
 		x.append("\n");
 	}
 	public void closeFile(){
