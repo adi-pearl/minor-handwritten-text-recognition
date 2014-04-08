@@ -22,6 +22,12 @@ public class TextRecognizer extends Applet{
 	private final int resolution=20;
 	private boolean bitmap[][]=new boolean[wdHt+1][wdWt+1];
 	private boolean image[][]=new boolean[resolution][resolution];
+	//corpus creation variables
+	private char presentSymbol;
+	private int counter;
+	private final String directory="D:/Study/Courses/Machine Learning Andrew Ng/project/corpus/";
+	private final Writefile f=new Writefile();
+	private final int noOfSamplesPerCharacter=10;
 	public void init() {
 		setSize(wdWt, wdHt);
 		
@@ -31,6 +37,9 @@ public class TextRecognizer extends Applet{
 		HandlerClass handler= new HandlerClass();
 		this.addMouseListener(handler);
 		this.addMouseMotionListener(handler);
+		
+		presentSymbol='0';counter=0;
+		statusBar.setText("Draw "+presentSymbol);
 	}
 	public void paint(Graphics g){
 		super.paint(g);
@@ -96,19 +105,32 @@ public class TextRecognizer extends Applet{
 			for(int i=0;i<500;++i)
 				for(int j=0;j<500;++j)
 					bitmap[i][j]=false;
-			statusBar.setText("bitmap cleared, Draw a digit");
+			statusBar.setText("bitmap cleared");
 			setForeground(Color.RED);
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			// TODO Auto-generated method stub
+			if(counter==0)f.openFile(directory+presentSymbol+".txt",presentSymbol);
+			counter++;
+			
 			statusBar.setText("Digit successfully Drawn");
+			v.clear();repaint();
 			imresize(bitmap);
-			Writefile f=new Writefile();
-			f.openFile("D:/Study/Courses/Machine Learning Andrew Ng/project/ex.txt");
 			f.addImage(image, resolution, resolution);
 			statusBar.setText("Digit image matrix stored in ex.txt");
+			
+			if(counter==noOfSamplesPerCharacter){
+				if(presentSymbol<'9')presentSymbol++;
+				else if(presentSymbol=='9')presentSymbol='a';
+				else if(presentSymbol<'z')presentSymbol++;
+				else {statusBar.setText("Corpus complete on your part...");}
+				counter=0;
+				f.closeFile();
+			}
+			
+			statusBar.setText("Draw "+presentSymbol);
 		}	
 	}
 }

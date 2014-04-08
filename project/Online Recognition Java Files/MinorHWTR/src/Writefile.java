@@ -1,11 +1,17 @@
 import java.io.File;
-import java.util.Formatter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 
 public class Writefile {
-	private Formatter x;
-	public void openFile(String filename){
+	private PrintWriter x;
+	private File log;
+	private char symbol;
+	public void openFile(String filename,char smb){
+		symbol=smb;
+		log=new File(filename);
 		try{
-			x=new Formatter(new File(filename));
+			if(log.exists()==false)log.createNewFile();
+			x=new PrintWriter(new FileWriter (log,true));
 		}
 		catch(Exception e){
 			System.out.println(e.getMessage());
@@ -14,11 +20,14 @@ public class Writefile {
 	public void addImage(boolean image[][],int m, int n){
 		for(int i=0;i<m;++i){
 			for(int j=0;j<n;++j){
-				x.format("%d", image[i][j]?1:0);
-				x.format("%s", " ");
+				x.append(image[i][j]?'1':'0');
+				x.append(" ");
 			}
-			x.format("%s", "\n");
 		}
+		x.append(symbol);
+		x.append("\n");
+	}
+	public void closeFile(){
 		x.close();
 	}
 }
