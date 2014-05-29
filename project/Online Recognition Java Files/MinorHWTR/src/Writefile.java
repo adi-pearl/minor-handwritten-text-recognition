@@ -5,12 +5,10 @@ import java.io.PrintWriter;
 public class Writefile {
 	private PrintWriter x;
 	private File log;
-	private char symbol;
-	public void openFile(String filename,char smb){
-		symbol=smb;
+	public void openFile(String filename, boolean createNew){
 		log=new File(filename);
 		try{
-			if(log.exists()==false)log.createNewFile();
+			if(createNew==true || log.exists()==false)log.createNewFile();
 			x=new PrintWriter(new FileWriter (log,true));
 		}
 		catch(Exception e){
@@ -23,12 +21,15 @@ public class Writefile {
 				x.append(image[i][j]?'1':'0');
 				x.append(" ");
 			}
-			//x.append("\n");
+			x.append("\n");
 		}
 		//x.append(symbol);
 		x.append("\n");
 	}
 	public void closeFile(){
 		x.close();
+	}
+	public void eraseFile(){
+		x.print("");
 	}
 }

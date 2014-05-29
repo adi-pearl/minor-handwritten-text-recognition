@@ -10,12 +10,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 /* <applet code="Cal" width=300 height=300> </applet> */
 
-public class TextRecognizer extends Applet{
+public class OnlineTextRecognizer extends Applet{
 	//GUI elements
 	private JLabel statusBar;
 	private JButton nextButton=new JButton("next");
-	private JButton clearButton=new JButton("clear");
-	//private JButton nextButton=new JButton("next");
 	private final int wdHt=500,wdWt=500;
 	private class coord{
 		public int x,y;
@@ -27,26 +25,25 @@ public class TextRecognizer extends Applet{
 	private boolean bitmap[][]=new boolean[wdHt+1][wdWt+1];
 	private boolean image[][]=new boolean[resolution][resolution];
 	//corpus creation variables
-	//private char presentSymbol;
-	//private int counter;
-	private final String directory="D:/Study/Courses/Machine Learning Andrew Ng/project/";
+	private char presentSymbol;
+	private int counter;
+	private final String directory="D:/Study/Courses/Machine Learning Andrew Ng/project/test/";
 	private final Writefile f=new Writefile();
-	//private final int noOfSamplesPerCharacter=10;
-	//private boolean complete=false;
+	private final int noOfSamplesPerCharacter=1;
+	private boolean complete=false;
 	public void init() {
 		setSize(wdWt, wdHt);
+		
 		statusBar=new JLabel("default");
 		this.add(statusBar,BorderLayout.SOUTH);
-		add(nextButton,BorderLayout.EAST);
-		add(clearButton,BorderLayout.WEST);
+		this.add(nextButton,BorderLayout.EAST);
 		HandlerClass handler= new HandlerClass();
+		this.addMouseListener(handler);
 		this.addMouseMotionListener(handler);
 		nextButton.addActionListener(handler);
-		clearButton.addActionListener(handler);
-		//nextButton.addActionListener(handler);
-		//presentSymbol='0';counter=0;
-		
-		setForeground(Color.RED);
+		presentSymbol='0';counter=0;
+		clearBitmap();
+		statusBar.setText("Draw "+presentSymbol);setForeground(Color.RED);
 	}
 	public void paint(Graphics g){
 		super.paint(g);
@@ -78,12 +75,12 @@ public class TextRecognizer extends Applet{
 		statusBar.setText("bitmap cleared");
 	}
 	private class HandlerClass implements 
-		MouseMotionListener,ActionListener{
+		MouseListener, MouseMotionListener,ActionListener{
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			// TODO Auto-generated method stub
-			statusBar.setText("Drawing:");
+			statusBar.setText("Drawing: "+presentSymbol );
 			bitmap[e.getY()][e.getX()]=true;
 			v.add(new coord(e.getX(),e.getY()));repaint();
 		}
@@ -93,21 +90,62 @@ public class TextRecognizer extends Applet{
 			// TODO Auto-generated method stub
 			//statusBar.setText("mouse moved");
 		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource()==clearButton){
-				clearBitmap();v.clear();repaint();
-				statusBar.setText("Draw");
-				f.openFile(directory+"ex.txt",true);
-				f.eraseFile();
-			}
-			else if(e.getSource()==nextButton){
+			// TODO Auto-generated method stub
+			if(e.getSource()==nextButton){
+				if(counter==0)f.openFile(directory+presentSymbol+".txt",false);
+				counter++;
+				
 				statusBar.setText("Digit successfully Drawn");
 				v.clear();repaint();
 				imresize(bitmap);
 				f.addImage(image, resolution, resolution);
 				statusBar.setText("Digit image matrix stored in ex.txt");
-				f.closeFile();
+				
+				if(counter==noOfSamplesPerCharacter){
+					if(presentSymbol<'9')presentSymbol++;
+					else if(presentSymbol=='9')presentSymbol='a';
+					else if(presentSymbol<'z')presentSymbol++;
+					else {statusBar.setText("Corpus complete on your part...");complete=true;}
+					counter=0;
+					f.closeFile();
+				}
+				clearBitmap();
+				if(complete==false)statusBar.setText("Draw "+presentSymbol);
+				else {statusBar.setText("corpus complete on your part");}
 			}
-		}
-		}
+		}	
+	}
 }
